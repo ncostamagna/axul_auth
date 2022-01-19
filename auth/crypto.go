@@ -31,7 +31,6 @@ func decrypt(encryptedString string, keyString string) (string, error) {
 	nonceSize := aesGCM.NonceSize()
 
 	//Extract the nonce from the encrypted data
-	fmt.Println(len(enc), nonceSize)
 	if len(enc) < nonceSize {
 		return "", errors.New("enc is lesser than nonce size")
 	}

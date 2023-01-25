@@ -25,6 +25,9 @@ type Auth interface {
 //
 // key: JWT key
 func New(key string) (Auth, error) {
+	if key == "" {
+		return nil, ErrKeyIsRequired
+	}
 	return &JWT{key: key}, nil
 }
 

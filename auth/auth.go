@@ -6,9 +6,10 @@ import (
 )
 
 type UserClaims struct {
-	ID       string `json:"user_id"`
-	UserName string `json:"username"`
-	Hash     string `json:"hash"`
+	ID         string `json:"user_id"`
+	UserName   string `json:"username"`
+	Hash       string `json:"hash"`
+	Authorized bool   `json:"authorized"`
 	jwt.RegisteredClaims
 }
 
@@ -18,7 +19,7 @@ type JWT struct {
 }
 
 type Auth interface {
-	Create(id, username, hash string, duration int64) (string, error)
+	Create(id, username, hash string, authorized bool, duration int64) (string, error)
 	Access(id, token string) error
 	Check(token string) (*UserClaims, error)
 }
@@ -40,12 +41,13 @@ func New(key string) (Auth, error) {
 // username: is the name of user
 //
 // duration: token expiration (in seconds)
-func (j *JWT) Create(id, username, hash string, duration int64) (string, error) {
+func (j *JWT) Create(id, username, hash string, authorized bool, duration int64) (string, error) {
 
 	claims := UserClaims{
 		ID:       id,
 		UserName: username,
 		Hash:     hash,
+		Authorized: authorized,
 	}
 
 	if duration != 0 {

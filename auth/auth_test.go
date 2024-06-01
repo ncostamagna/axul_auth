@@ -25,7 +25,7 @@ func TestAuth_CreateToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, err2 := auth.Create("123", "nahuel", "", 0)
+		token, err2 := auth.Create("123", "nahuel", "", true, 0)
 		if err2 != nil {
 			t.Errorf("err %v", err2)
 		}
@@ -42,7 +42,7 @@ func TestAuth_CreateToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, err2 := auth.Create("123", "nahuel", "", 20)
+		token, err2 := auth.Create("123", "nahuel", "", true, 20)
 		if err2 != nil {
 			t.Errorf("err %v", err2)
 		}
@@ -78,7 +78,7 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", 1)
+		token, _ := auth.Create(id, "nahuel", "", true, 1)
 		err2 := auth.Access("other_id", token)
 		if err2 == nil {
 			t.Errorf("err is nil, must be invalid user id")
@@ -93,7 +93,7 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", 1)
+		token, _ := auth.Create(id, "nahuel", "", true, 1)
 		time.Sleep(2 * time.Second)
 		err2 := auth.Access(id, token)
 		if err2 == nil {
@@ -109,7 +109,7 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", 1)
+		token, _ := auth.Create(id, "nahuel", "", true, 1)
 		err2 := auth.Access(id, token)
 		if err2 != nil {
 			t.Errorf("err %v", err)
@@ -123,7 +123,7 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", 0)
+		token, _ := auth.Create(id, "nahuel", "", true, 0)
 		err2 := auth.Access(id, token)
 		if err2 != nil {
 			t.Errorf("err %v", err)

@@ -15,7 +15,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	token, err2 := auth.Create(id, "nahuel", 1)
+	token, err2 := auth.Create(id, "nahuel", "",1)
 	if err2 != nil {
 		fmt.Println(err2)
 		os.Exit(-1)

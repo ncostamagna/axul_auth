@@ -1,14 +1,12 @@
 package auth
 
 import (
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
 
 type UserClaims struct {
 	ID         string `json:"user_id"`
-	UserName   string `json:"username"`
-	Hash       string `json:"hash"`
 	Authorized bool   `json:"authorized"`
 	jwt.RegisteredClaims
 }
@@ -19,8 +17,7 @@ type JWT struct {
 }
 
 type Auth interface {
-	Create(id, username, hash string, authorized bool, duration int64) (string, error)
-	Access(id, token string) error
+	Create(id string, authorized bool, duration int64) (string, error)
 	Check(token string) (*UserClaims, error)
 }
 
@@ -41,12 +38,10 @@ func New(key string) (Auth, error) {
 // username: is the name of user
 //
 // duration: token expiration (in seconds)
-func (j *JWT) Create(id, username, hash string, authorized bool, duration int64) (string, error) {
+func (j *JWT) Create(id string, authorized bool, duration int64) (string, error) {
 
 	claims := UserClaims{
-		ID:       id,
-		UserName: username,
-		Hash:     hash,
+		ID:         id,
 		Authorized: authorized,
 	}
 
@@ -65,35 +60,7 @@ func (j *JWT) Create(id, username, hash string, authorized bool, duration int64)
 	return ss, nil
 }
 
-// Access is a method of JWT
-//
-// id: is the user ID
-//
-// token: is the jwt
-// DEPRECATED
-func (j *JWT) Access(id, token string) error {
-
-	verificationToken, err := jwt.ParseWithClaims(token, &UserClaims{}, func(beforeVeritificationToken *jwt.Token) (interface{}, error) {
-		if beforeVeritificationToken.Method.Alg() != jwt.SigningMethodHS256.Alg() {
-			return nil, ErrAlgMethod
-		}
-		return []byte(j.key), nil
-	})
-
-	if err != nil || !verificationToken.Valid {
-		return ErrInvalidAuthentication
-	}
-
-	user := verificationToken.Claims.(*UserClaims)
-	if user.ID != id {
-		return ErrInvalidAuthentication
-	}
-
-	return nil
-}
-
 // Check is a method of JWT
-//
 // token: is the jwt
 func (j *JWT) Check(token string) (*UserClaims, error) {
 	verificationToken, err := jwt.ParseWithClaims(token, &UserClaims{}, func(beforeVeritificationToken *jwt.Token) (interface{}, error) {

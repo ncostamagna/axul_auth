@@ -1,5 +1,5 @@
 module github.com/ncostamagna/axul_auth
 
-go 1.19
+go 1.22
 
-require github.com/golang-jwt/jwt/v4 v4.4.3
+require github.com/golang-jwt/jwt/v5 v5.2.1

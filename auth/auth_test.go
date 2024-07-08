@@ -25,7 +25,7 @@ func TestAuth_CreateToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, err2 := auth.Create("123", "nahuel", "", true, 0)
+		token, err2 := auth.Create("123", true, 0)
 		if err2 != nil {
 			t.Errorf("err %v", err2)
 		}
@@ -42,7 +42,7 @@ func TestAuth_CreateToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, err2 := auth.Create("123", "nahuel", "", true, 20)
+		token, err2 := auth.Create("123", true, 20)
 		if err2 != nil {
 			t.Errorf("err %v", err2)
 		}
@@ -57,31 +57,18 @@ func TestAuth_CreateToken(t *testing.T) {
 func TestAuth_AccessToken(t *testing.T) {
 	t.Run("failWhenTokenIsInvalid", func(t *testing.T) {
 
-		id := "123"
 		auth, err := auth.New("123456")
 		if err != nil {
 			t.Errorf("err %v", err)
 		}
 
-		err2 := auth.Access(id, "invalid_token")
+		user, err2 := auth.Check("invalid_token")
 		if err2 == nil {
 			t.Errorf("err is nil, must be invalid token")
 		}
 
-	})
-
-	t.Run("failWhenUserIDIsDifferent", func(t *testing.T) {
-
-		id := "123"
-		auth, err := auth.New("123456")
-		if err != nil {
-			t.Errorf("err %v", err)
-		}
-
-		token, _ := auth.Create(id, "nahuel", "", true, 1)
-		err2 := auth.Access("other_id", token)
-		if err2 == nil {
-			t.Errorf("err is nil, must be invalid user id")
+		if user != nil {
+			t.Errorf("user is not nil, must be nil")
 		}
 
 	})
@@ -93,11 +80,15 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", true, 1)
+		token, _ := auth.Create(id, true, 1)
 		time.Sleep(2 * time.Second)
-		err2 := auth.Access(id, token)
+		user, err2 := auth.Check(token)
 		if err2 == nil {
 			t.Errorf("err is nil, must be token expired")
+		}
+
+		if user != nil {
+			t.Errorf("user is not nil, must be nil")
 		}
 
 	})
@@ -109,10 +100,22 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", true, 1)
-		err2 := auth.Access(id, token)
+		token, _ := auth.Create(id, true, 1)
+		user, err2 := auth.Check(token)
 		if err2 != nil {
 			t.Errorf("err %v", err)
+		}
+
+		if user == nil {
+			t.Errorf("user is nil, must be not nil")
+		} else {
+			if user.ID != id {
+				t.Errorf("user.ID is invalid")
+			}
+
+			if user.Authorized != true {
+				t.Errorf("user.Authorized is invalid")
+			}
 		}
 
 	})
@@ -123,11 +126,22 @@ func TestAuth_AccessToken(t *testing.T) {
 			t.Errorf("err %v", err)
 		}
 
-		token, _ := auth.Create(id, "nahuel", "", true, 0)
-		err2 := auth.Access(id, token)
+		token, _ := auth.Create(id, true, 0)
+		user, err2 := auth.Check(token)
 		if err2 != nil {
 			t.Errorf("err %v", err)
 		}
 
+		if user == nil {
+			t.Errorf("user is nil, must be not nil")
+		} else {
+			if user.ID != id {
+				t.Errorf("user.ID is invalid")
+			}
+
+			if user.Authorized != true {
+				t.Errorf("user.Authorized is invalid")
+			}
+		}
 	})
 }
